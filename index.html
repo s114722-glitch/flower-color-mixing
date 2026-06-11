@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>花語調色 · Bloom Mix</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:#fdf0e8;
+  color:#5a3e35;
+  font-family:system-ui,-apple-system,sans-serif;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:24px 14px 60px;
+}
+.wrap{width:100%;max-width:460px;display:flex;flex-direction:column;align-items:center}
+
+h1{font-size:22px;font-weight:400;letter-spacing:4px;color:#5a3e35;text-align:center;margin-bottom:2px}
+.sub{font-size:11px;letter-spacing:4px;color:#b8907e;text-align:center;margin-bottom:20px;text-transform:uppercase}
+
+.dots{display:flex;gap:6px;justify-content:center;margin-bottom:14px}
+.dot{width:8px;height:8px;border-radius:50%;background:#e8d0c0;transition:all .3s}
+.dot.done{background:#d4956a}
+.dot.cur{background:#e8826a;transform:scale(1.3)}
+
+.top-chips{display:flex;gap:10px;width:100%;margin-bottom:12px}
+.chip{flex:1;background:#fff8f3;border:1px solid #f0d9c8;border-radius:12px;padding:8px 10px;text-align:center}
+.chip-l{font-size:11px;color:#b8907e;margin-bottom:1px}
+.chip-v{font-size:19px;font-weight:500;color:#5a3e35}
+
+.card{background:#fff8f3;border:1px solid #f0d9c8;border-radius:16px;padding:14px 16px;margin-bottom:12px;width:100%}
+.row-sw{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:10px}
+.sw-wrap{text-align:center}
+.sw{width:58px;height:58px;border-radius:50%;border:2px solid #f0d9c8;margin:0 auto 4px;transition:background .4s}
+.sw-lbl{font-size:11px;color:#b8907e}
+.arrow{font-size:18px;color:#b8907e}
+.meter-bg{background:#f0d9c8;border-radius:99px;height:6px;overflow:hidden;margin-bottom:4px}
+.meter-fill{height:100%;border-radius:99px;background:#e8826a;transition:width .5s cubic-bezier(.34,1.2,.64,1);width:0%}
+.meter-lbl{font-size:11px;color:#b8907e;text-align:center}
+.hint{font-size:12px;color:#b8907e;text-align:center;margin-top:7px;line-height:1.6}
+
+.section-lbl{font-size:11px;color:#b8907e;letter-spacing:2px;align-self:flex-start;margin-bottom:8px;text-transform:uppercase}
+
+.shelf{display:flex;flex-wrap:wrap;gap:8px;width:100%;margin-bottom:12px;justify-content:flex-start}
+.fl{
+  width:72px;padding:8px 4px 6px;
+  border-radius:12px;
+  border:1.5px solid #f0d9c8;
+  background:#fff8f3;
+  cursor:pointer;text-align:center;
+  transition:border-color .2s,transform .15s,background .15s;
+  position:relative;user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.fl:hover{border-color:#e8826a;transform:translateY(-2px)}
+.fl.sel{border-color:#e8826a;background:#fef0e8}
+.fl-dot{width:36px;height:36px;border-radius:50%;margin:0 auto 4px}
+.fl-name{font-size:11px;color:#b8907e}
+.fl-cnt{
+  position:absolute;top:3px;right:3px;
+  width:16px;height:16px;border-radius:50%;
+  background:#e8826a;color:#fff;font-size:9px;
+  display:none;align-items:center;justify-content:center;font-weight:600;
+}
+.fl.sel .fl-cnt{display:flex}
+
+.pot-card{background:#fff8f3;border:1px solid #f0d9c8;border-radius:16px;padding:14px 16px;width:100%;margin-bottom:12px}
+.pot-title{font-size:11px;color:#b8907e;letter-spacing:2px;text-align:center;margin-bottom:10px;text-transform:uppercase}
+.slots{display:flex;gap:10px;justify-content:center;margin-bottom:12px}
+.slot{
+  width:54px;height:54px;border-radius:50%;
+  border:1.5px dashed #e0c8b8;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;color:#d0b8a8;
+  cursor:pointer;position:relative;overflow:hidden;
+  transition:background .3s,border-color .2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.slot.filled{border-style:solid;border-color:#c8a898}
+.slot .sx{
+  position:absolute;top:1px;right:1px;
+  width:15px;height:15px;border-radius:50%;
+  background:rgba(255,255,255,0.85);color:#e8826a;
+  font-size:9px;display:none;align-items:center;justify-content:center;
+}
+.slot.filled:hover .sx{display:flex}
+
+.btns{display:flex;gap:8px;justify-content:center}
+button{
+  border-radius:99px;padding:9px 22px;font-size:13px;
+  cursor:pointer;transition:transform .1s;font-family:inherit;
+  letter-spacing:1px;
+}
+button:active{transform:scale(0.95)}
+.b-mix{background:#e8826a;color:#fff;border:none;box-shadow:0 3px 12px rgba(232,130,106,.35)}
+.b-mix:hover{background:#d4735a}
+.b-clear{background:transparent;color:#b8907e;border:1px solid #e0c8b8}
+.b-clear:hover{background:#fef0e8}
+
+.toast{
+  background:#5a3e35;color:#fff;
+  border-radius:99px;padding:8px 18px;font-size:12px;
+  text-align:center;margin-bottom:10px;
+  transition:opacity .3s;opacity:0;width:100%;
+}
+.toast.show{opacity:1}
+
+/* modal overlay */
+.modal-overlay{
+  position:fixed;inset:0;
+  background:rgba(90,62,53,0.45);
+  display:none;align-items:center;justify-content:center;
+  z-index:100;padding:20px;
+  backdrop-filter:blur(3px);
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:#fff8f3;border:1px solid #f0d9c8;
+  border-radius:20px;padding:32px 24px;
+  text-align:center;max-width:300px;width:100%;
+  box-shadow:0 8px 32px rgba(90,62,53,.15);
+}
+.modal-em{font-size:2.6rem;margin-bottom:10px}
+.modal-t{font-size:20px;font-weight:500;color:#5a3e35;margin-bottom:6px;letter-spacing:1px}
+.modal-p{font-size:13px;color:#b8907e;margin-bottom:18px;line-height:1.7}
+.modal .b-mix{width:100%;padding:11px}
+
+/* petal animation */
+.petal-bg{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.bp{
+  position:absolute;border-radius:60% 40% 60% 40%;
+  opacity:0.1;animation:bpFloat linear infinite;
+}
+@keyframes bpFloat{
+  0%{transform:translateY(105vh) rotate(0deg)}
+  100%{transform:translateY(-8vh) rotate(360deg)}
+}
+.wrap{position:relative;z-index:1}
+
+/* particle canvas */
+#pcv{position:fixed;inset:0;pointer-events:none;z-index:50}
+</style>
+</head>
+<body>
+
+<div class="petal-bg" id="pbg"></div>
+<canvas id="pcv"></canvas>
+
+<!-- Start modal -->
+<div class="modal-overlay show" id="m-start">
+  <div class="modal">
+    <div class="modal-em">🌸</div>
+    <div class="modal-t">花語調色</div>
+    <div class="modal-p">把花朵放入調色盤<br>混出目標顏色，越近越高分！<br>共 8 個關卡</div>
+    <button class="b-mix" onclick="startGame()">開始調色 ✦</button>
+  </div>
+</div>
+
+<!-- Win modal -->
+<div class="modal-overlay" id="m-win">
+  <div class="modal">
+    <div class="modal-em" id="w-em">🌸</div>
+    <div class="modal-t" id="w-t">漂亮！</div>
+    <div class="modal-p" id="w-p"></div>
+    <button class="b-mix" id="w-btn">下一關 →</button>
+  </div>
+</div>
+
+<!-- End modal -->
+<div class="modal-overlay" id="m-end">
+  <div class="modal">
+    <div class="modal-em">💐</div>
+    <div class="modal-t">全部完成！</div>
+    <div class="modal-p" id="e-p">花語調色師認證！</div>
+    <button class="b-mix" onclick="restartGame()">再玩一次 ✦</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <h1>花語調色</h1>
+  <div class="sub">Bloom Mix</div>
+
+  <div class="dots" id="dots"></div>
+
+  <div class="top-chips">
+    <div class="chip"><div class="chip-l">關卡</div><div class="chip-v" id="lv-v">1/8</div></div>
+    <div class="chip"><div class="chip-l">總分</div><div class="chip-v" id="sc-v">0</div></div>
+  </div>
+
+  <div id="toast-el" class="toast"></div>
+
+  <div class="card">
+    <div class="row-sw">
+      <div class="sw-wrap">
+        <div class="sw" id="t-sw"></div>
+        <div class="sw-lbl">目標</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="sw-wrap">
+        <div class="sw" id="m-sw" style="background:#f0e0d0"></div>
+        <div class="sw-lbl">混色</div>
+      </div>
+    </div>
+    <div class="meter-bg"><div class="meter-fill" id="meter"></div></div>
+    <div class="meter-lbl" id="m-lbl">放入花朵開始混色</div>
+    <div class="hint" id="hint-t"></div>
+  </div>
+
+  <div class="section-lbl">可用的花朵</div>
+  <div class="shelf" id="shelf"></div>
+
+  <div class="pot-card">
+    <div class="pot-title">調色盤（最多 3 朵）</div>
+    <div class="slots" id="slots"></div>
+    <div class="btns">
+      <button class="b-clear" onclick="clearPot()">清空</button>
+      <button class="b-mix" onclick="doMix()">混色 ✦</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const FLOWERS=[
+  {id:'rose',   name:'玫瑰',  color:'#e8435a'},
+  {id:'sunfl',  name:'向日葵',color:'#f5c842'},
+  {id:'lavend', name:'薰衣草',color:'#9b7fd4'},
+  {id:'sakura', name:'櫻花',  color:'#f7a8c4'},
+  {id:'iris',   name:'鳶尾',  color:'#5b8bd4'},
+  {id:'lily',   name:'百合',  color:'#f2ede8'},
+  {id:'mint',   name:'薄荷',  color:'#6ecfa0'},
+  {id:'violet', name:'紫羅蘭',color:'#7b4fa6'},
+  {id:'dahlia', name:'大麗花',color:'#d44a6e'},
+];
+const LEVELS=[
+  {target:'#f4a070',avail:['rose','sunfl','lily'],hint:'橙色 = 紅 + 黃，加白更柔和'},
+  {target:'#c87ab8',avail:['rose','lavend','lily'],hint:'粉紫 = 玫瑰 + 薰衣草'},
+  {target:'#7ab8d4',avail:['sakura','iris','lily'],hint:'天藍 = 鳶尾 + 白色調淡'},
+  {target:'#88c87a',avail:['sunfl','mint','iris'],hint:'草綠 = 黃 + 薄荷綠'},
+  {target:'#e88090',avail:['rose','sakura','lily'],hint:'珊瑚 = 玫瑰 + 櫻花'},
+  {target:'#b09060',avail:['sunfl','rose','violet','lily'],hint:'大地色：黃 + 紅 + 紫混合'},
+  {target:'#8870c0',avail:['lavend','violet','iris','lily'],hint:'深藍紫 = 薰衣草 + 紫羅蘭'},
+  {target:'#d46090',avail:['rose','dahlia','sakura','lavend','lily'],hint:'最終關！混出迷人的玫紅'},
+];
+
+let lv=0,pot=[],score=0,toastTm=null;
+
+function hexToRgb(h){return{r:parseInt(h.slice(1,3),16),g:parseInt(h.slice(3,5),16),b:parseInt(h.slice(5,7),16)}}
+function rgbToHex({r,g,b}){return'#'+[r,g,b].map(v=>Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,'0')).join('')}
+function mixColors(arr){
+  if(!arr.length)return'#f0e0d0';
+  const s=arr.reduce((a,h)=>{const c=hexToRgb(h);return{r:a.r+c.r*c.r,g:a.g+c.g*c.g,b:a.b+c.b*c.b}},{r:0,g:0,b:0});
+  const n=arr.length;
+  return rgbToHex({r:Math.sqrt(s.r/n),g:Math.sqrt(s.g/n),b:Math.sqrt(s.b/n)});
+}
+function matchPct(a,b){
+  const ca=hexToRgb(a),cb=hexToRgb(b);
+  return Math.max(0,100-Math.sqrt((ca.r-cb.r)**2+(ca.g-cb.g)**2+(ca.b-cb.b)**2)/Math.sqrt(3*255*255)*100);
+}
+
+function toast(msg){
+  const el=document.getElementById('toast-el');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastTm);
+  toastTm=setTimeout(()=>el.classList.remove('show'),1800);
+}
+
+function showModal(id){document.getElementById(id).classList.add('show')}
+function hideModal(id){document.getElementById(id).classList.remove('show')}
+
+function startGame(){hideModal('m-start');loadLevel(0)}
+function restartGame(){hideModal('m-end');lv=0;score=0;pot=[];document.getElementById('sc-v').textContent='0';loadLevel(0)}
+
+function loadLevel(idx){
+  const d=LEVELS[idx];pot=[];
+  document.getElementById('lv-v').textContent=`${idx+1}/8`;
+  document.getElementById('t-sw').style.background=d.target;
+  document.getElementById('m-sw').style.background='#f0e0d0';
+  document.getElementById('meter').style.width='0%';
+  document.getElementById('m-lbl').textContent='放入花朵開始混色';
+  document.getElementById('hint-t').textContent=d.hint;
+  buildDots();buildShelf(d);buildSlots();
+}
+
+function buildDots(){
+  const el=document.getElementById('dots');el.innerHTML='';
+  for(let i=0;i<8;i++){
+    const d=document.createElement('div');
+    d.className='dot'+(i<lv?' done':i===lv?' cur':'');
+    el.appendChild(d);
+  }
+}
+
+function buildShelf(d){
+  const el=document.getElementById('shelf');el.innerHTML='';
+  d.avail.forEach(id=>{
+    const f=FLOWERS.find(x=>x.id===id);
+    const div=document.createElement('div');
+    div.className='fl';div.dataset.id=id;
+    div.innerHTML=`<div class="fl-dot" style="background:${f.color}"></div><div class="fl-name">${f.name}</div><div class="fl-cnt" id="cnt-${id}">1</div>`;
+    div.onclick=()=>addFlower(id);
+    el.appendChild(div);
+  });
+}
+
+function buildSlots(){
+  const el=document.getElementById('slots');el.innerHTML='';
+  for(let i=0;i<3;i++){
+    const s=document.createElement('div');
+    s.className='slot';s.dataset.i=i;
+    s.innerHTML='<span class="plus">+</span><span class="sx">✕</span>';
+    s.onclick=()=>removeSlot(i);
+    el.appendChild(s);
+  }
+}
+
+function addFlower(id){
+  if(pot.length>=3){toast('調色盤已滿！先移除一朵花');return;}
+  pot.push(id);refreshUI();
+}
+function removeSlot(i){if(i>=pot.length)return;pot.splice(i,1);refreshUI();}
+function clearPot(){pot=[];refreshUI();}
+
+function refreshUI(){
+  document.querySelectorAll('#slots .slot').forEach((s,i)=>{
+    if(i<pot.length){
+      const f=FLOWERS.find(x=>x.id===pot[i]);
+      s.style.background=f.color;s.classList.add('filled');
+      s.querySelector('.plus').style.display='none';
+    } else {
+      s.style.background='';s.classList.remove('filled');
+      s.querySelector('.plus').style.display='';
+    }
+  });
+  const counts={};pot.forEach(id=>counts[id]=(counts[id]||0)+1);
+  document.querySelectorAll('.fl').forEach(el=>{
+    const id=el.dataset.id,c=counts[id]||0;
+    el.classList.toggle('sel',c>0);
+    const cnt=document.getElementById(`cnt-${id}`);
+    if(cnt){cnt.textContent=c;cnt.style.display=c>0?'flex':'none';}
+  });
+  if(pot.length){
+    const colors=pot.map(id=>FLOWERS.find(x=>x.id===id).color);
+    const mixed=mixColors(colors);
+    const p=matchPct(mixed,LEVELS[lv].target);
+    document.getElementById('m-sw').style.background=mixed;
+    document.getElementById('meter').style.width=p.toFixed(1)+'%';
+    document.getElementById('m-lbl').textContent=`相似度 ${p.toFixed(1)}%`;
+  } else {
+    document.getElementById('m-sw').style.background='#f0e0d0';
+    document.getElementById('meter').style.width='0%';
+    document.getElementById('m-lbl').textContent='放入花朵開始混色';
+  }
+}
+
+function doMix(){
+  if(!pot.length){toast('先放入花朵！');return;}
+  const colors=pot.map(id=>FLOWERS.find(x=>x.id===id).color);
+  const result=mixColors(colors);
+  const p=matchPct(result,LEVELS[lv].target);
+  const pts=p>=95?100:p>=85?80:p>=70?60:p>=55?40:20;
+  score+=pts;
+  document.getElementById('sc-v').textContent=score;
+  launchParticles(result);
+  document.getElementById('w-em').textContent=p>=95?'🌸':p>=85?'🌼':p>=70?'✿':'🌿';
+  document.getElementById('w-t').textContent=p>=85?'漂亮！':'不錯喔！';
+  document.getElementById('w-p').textContent=`相似度 ${p.toFixed(1)}%　獲得 ${pts} 分`;
+  const wb=document.getElementById('w-btn');
+  if(lv>=7){
+    wb.textContent='查看結果';
+    wb.onclick=()=>{hideModal('m-win');document.getElementById('e-p').textContent=`總分 ${score} 分　花語調色師認證！`;showModal('m-end');};
+  } else {
+    wb.textContent='下一關 →';
+    wb.onclick=()=>{hideModal('m-win');lv++;loadLevel(lv);};
+  }
+  showModal('m-win');
+}
+
+// particles
+const pcv=document.getElementById('pcv');
+const pctx=pcv.getContext('2d');
+let parts=[];
+function resizePcv(){pcv.width=window.innerWidth;pcv.height=window.innerHeight}
+resizePcv();window.addEventListener('resize',resizePcv);
+function launchParticles(color){
+  const cx=window.innerWidth/2,cy=window.innerHeight*0.38;
+  for(let i=0;i<55;i++){
+    const a=Math.random()*Math.PI*2,spd=1.5+Math.random()*4;
+    parts.push({x:cx,y:cy,vx:Math.cos(a)*spd,vy:Math.sin(a)*spd-2.5,
+      r:3+Math.random()*6,alpha:1,
+      color:[color,'#f7a8c4','#ffd166'][i%3],
+      rot:Math.random()*Math.PI*2,rspd:(Math.random()-.5)*.15,
+      life:0,maxLife:55+Math.random()*40});
+  }
+  if(!parts._r){parts._r=true;requestAnimationFrame(animP)}
+}
+function animP(){
+  pctx.clearRect(0,0,pcv.width,pcv.height);
+  parts=parts.filter(p=>p.life<p.maxLife);
+  parts.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;p.vy+=0.13;p.life++;p.rot+=p.rspd;p.alpha=1-p.life/p.maxLife;
+    pctx.save();pctx.globalAlpha=p.alpha;pctx.translate(p.x,p.y);pctx.rotate(p.rot);
+    pctx.beginPath();pctx.ellipse(0,0,p.r,p.r*1.6,0,0,Math.PI*2);
+    pctx.fillStyle=p.color;pctx.fill();pctx.restore();
+  });
+  if(parts.length)requestAnimationFrame(animP);else parts._r=false;
+}
+
+// bg petals
+const PC=['#fce4ec','#f8bbd0','#e8f5e9','#fff9c4','#ede7f6'];
+const pbg=document.getElementById('pbg');
+for(let i=0;i<16;i++){
+  const el=document.createElement('div');el.className='bp';
+  const s=18+Math.random()*38;
+  el.style.cssText=`width:${s}px;height:${s*1.4}px;background:${PC[i%PC.length]};left:${Math.random()*100}%;animation-duration:${13+Math.random()*16}s;animation-delay:${-Math.random()*20}s;`;
+  pbg.appendChild(el);
+}
+</script>
+</body>
+</html>
